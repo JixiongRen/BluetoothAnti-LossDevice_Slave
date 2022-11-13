@@ -4,7 +4,6 @@
 #include "math.h"
 #define E 2.71828
 
-/***************************子函数****************************/
 
 /**
  * @brief 使用两种公式对距离进行计算，其中经验值直接参考教程中给出，
@@ -18,7 +17,8 @@
 double Discal(double txPower, double rssi, int flag)
 {
     double dis;
-    if (flag == 0){
+    if (flag == 0)
+    {
         // 多经验值算法
         dis = (0.89976) * powf((rssi / txPower), 7.7095) + 0.111;
     } else {
@@ -30,6 +30,7 @@ double Discal(double txPower, double rssi, int flag)
 
 /**
  * @brief 计算高斯模糊权重的函数
+ * 
  * @param x 需要计算权重的变量
  * @param mu 该组数据的样本均值
  * @param sigma 该组数据的样本标准差
@@ -41,11 +42,11 @@ double NormalDistribution(double x, double mu, double sigma)
 }
 
 /**
- * @brief 对一个测量列中的结果进行高斯模糊处理
- * @param ArryAddr 需要处理的测量列的首地址
+ * @brief 
+ * 
+ * @param ArryAddr 
  */
 void GussianBlurWeight(double* ArryAddr){
-    // 89C52的片内RAM仅有256B，为节约空间，变量一律置于片外RAM(64KB)，即__xdata
     __xdata char i = 0;
     __xdata double DisArry[10]; 
     __xdata double Weight[10];
@@ -62,12 +63,10 @@ void GussianBlurWeight(double* ArryAddr){
     }
     double sigma = sqrtf(Pow/(10 - 1));
     for (i=0;i<10;i++){
-        // 计算每个结果分配的高斯权重
         Weight[i] = NormalDistribution(ArryAddr[i], mu, sigma);
         sumWeight = sumWeight + Weight[i];
     }
     for (i=0;i<10;i++){
-        // 权重归一化
         Weight[i] = Weight[i] / sumWeight;
         ArryAddr[i] = ArryAddr[i] * Weight[i];
     }

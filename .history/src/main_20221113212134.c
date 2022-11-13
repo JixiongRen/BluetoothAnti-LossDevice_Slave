@@ -1,6 +1,9 @@
-#include "DisRelated.h"
+#include "STC89XX.h"
+#include "compiler.h"
 #include "stdio.h"
 #include "math.h"
+#define uchar unsigned char;
+#define uint unsigned int;
 
 /**
  * @brief 使用两种公式对距离进行计算，其中经验值直接参考教程中给出，
@@ -11,7 +14,6 @@
  * == 1，使用少经验值的计算式
  * @return float 计算得到的距离
  */
-
 double Discal(double txPower, double rssi, int flag)
 {
     double dis;
@@ -26,9 +28,30 @@ double Discal(double txPower, double rssi, int flag)
     return dis;
 }
 
-struct dis_arr GaussianBlur(struct dis_arr disBeforeGussian)
+double* GussianBlurWeight(double* ArryAddr){
+    uchar i;
+    double DisArry[10]; 
+    double sum = 0;
+    double Pow = 0;
+    for (i=0;i<10;i++){
+        DisArry[i] = *(ArryAddr + i);
+        sum = sum + DisArry[i];
+    }
+    double mu = sum / 10;
+    for (i=0;i<10;i++){
+        Pow = Pow + powf(DisArry[i] - mu, 2);
+    }
+    double sigma = sqrtf(Pow/(10 - 1));
+}
+
+
+
+/***************************主函数****************************/
+void main()
 {
-    struct dis_arr disAfterGussian;
-    
+    double txPower = 1.0000; 
+    double RSSI = 5.12487;
+    int flag = 1;
+    double dis = Discal(txPower, RSSI, flag);
 }
 
