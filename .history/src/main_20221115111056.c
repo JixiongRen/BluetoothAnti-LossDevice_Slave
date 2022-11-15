@@ -110,7 +110,7 @@ void delay (uchar xms){
 /**
  * 初始化定时器T0，用于实现时间记录的功能
 */
-void initT0_INT0()
+void initT0()
 {
     TMOD = 0x00;    // 设定定时器0工作方式0
     TH0 = (8192-4607)/32; 
@@ -122,10 +122,18 @@ void initT0_INT0()
     TR0 = 1; // 开始计时
 }
 
-
+/**
+ * @brief 定时器T0的中断服务函数，用于增加num以及为TH0，TL0装填初值
+ */
+void T0_itrpt() __interrupt(1) // __interrupt(1) 是定时器T0的中断号，定时器T0中断后程序会自动进入中断号为1的中断服务程序
+{
+    TH0 = (8192-4607)/32; 
+    TL0 = (8192-4607)%32;
+    num ++;
+}
 
 /**
- * @brief 实现自动计时的函数，即钟表走时，理论上在主函数调用本函数就可以实现时间管理
+ * @brief 实现自动计时的函数，即钟表走时
  */
 void AutomaticTiming()
 {
@@ -163,6 +171,8 @@ void AutomaticTiming()
         }
     }
 }
+
+
 
 /**
  * @brief 此函数的作用在于当用户在设置模式下按下移动光标位置键，
@@ -222,33 +232,19 @@ void AdjustTheValue()
     }
 }
 
-/**
- * @brief 设置键被按下（触发外部中断0）则进入外部中断0中断服务程序
- * 调用选位、调值函数进行对时操作
- * 检测到设置键弹起则退出服务程序
- */
-void INT0_itrpt() __interrupt(0)
+void ClockMain()
 {
-    while(1){
-        SelectPosition();
-        AdjustTheValue();
-        if (SETBUTT == 1){
-            delay(10);
-            if (SETBUTT == 1){
-                break;
-            }
-        }
-    }
+    // initT0()必须在主函数Main()中执行！
+
 }
 
-/**
- * @brief 定时器T0的中断服务函数，用于增加num以及为TH0，TL0装填初值
- */
-void T0_itrpt() __interrupt(1) // __interrupt(1) 是定时器T0的中断号，定时器T0中断后程序会自动进入中断号为1的中断服务程序
+void INT0_itrpt() __interrupt(0)
 {
-    TH0 = (8192-4607)/32; 
-    TL0 = (8192-4607)%32;
-    num ++;
+    if (SETBUTT == 0){
+        SelectPosition();
+
+
+    }
 }
 
 /***************************主函数****************************/
